@@ -1,8 +1,10 @@
+import Mail from '@ioc:Adonis/Addons/Mail'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import User from 'App/Models/User'
 import { DateTime } from 'luxon'
 import md5 from 'md5'
+import Env from '@ioc:Adonis/Core/Env'
 
 export default class UsersController {
   public async index ({ response }: HttpContextContract) {
@@ -21,6 +23,7 @@ export default class UsersController {
       await Database.transaction(async (trx) =>{
         const data = request.only(['email', 'password', 'phone', 'city_id', 'access_level', 'avatar'])
         const user = new User()
+        let email = ''
 
         const avatar = request.file('avatar', {
           size: '2mb',
@@ -38,6 +41,13 @@ export default class UsersController {
         user.fill({ ...data, avatar: avatar?.fileName })
         user.useTransaction(trx)
         await user.save()
+
+        Mail.send((message) => {
+          message
+            .from(`${Env.get("SMTP_USERNAME")}`)
+            .to(user.email)
+            .subject('Bem-vindo ao AutoPista')
+        })
 
         response
           .status(200)
