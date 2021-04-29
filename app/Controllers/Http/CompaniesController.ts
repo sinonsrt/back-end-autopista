@@ -21,10 +21,6 @@ export default class CompaniesController {
           'phone',
           'city_id',
         ])
-        const user = new User()
-        user.fill({...dataUser, access_level: 2})
-        user.useTransaction(trx)
-        user.save()
 
         const dataCompany = request.only([
           'company_name',
@@ -42,10 +38,17 @@ export default class CompaniesController {
           'service_gas_id',
           'type_id',
         ])
+
+        const user = new User()
+        user.fill({...dataUser, access_level: 2})
+        user.useTransaction(trx)
+        await user.save()
+
+
         const company = new Company()
         company.fill({...dataCompany, user_id: user.id, phone: user.phone, city_id: user.city_id})
         company.useTransaction(trx)
-        company.save()
+        await company.save()
 
         const dtImage = new Array()
         const dataImage = request.file('image', {

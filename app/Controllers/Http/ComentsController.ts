@@ -1,6 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
+import Code from 'App/Models/Code'
 import Coment from 'App/Models/Coment'
+import UserCode from 'App/Models/UserCode'
 import { DateTime } from 'luxon'
 
 export default class ComentsController {
@@ -37,6 +39,30 @@ export default class ComentsController {
         .send(error)
     }
   }
+
+  public async codeComent ({ request, response, auth }: HttpContextContract) {
+    try{
+      const code = request.only(['code'])
+      const dataCode = await Code.findByOrFail('code', code.code)
+
+      if(dataCode.code === code.code){
+        await UserCode.create({...code, user_id: auth.user?.id })
+
+        response
+          .status(200)
+          .send('Código bônus cadastrado com sucesso!')
+      }else{
+        throw new Error('Erro ao cadastrar código bônus!')
+      }
+
+
+    }catch(error){
+      response
+        .status(400)
+        .send('Erro: ' + error)
+    }
+  }
+
 
   public async update ({}: HttpContextContract) {
   }
