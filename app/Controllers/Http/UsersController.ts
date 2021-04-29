@@ -5,6 +5,8 @@ import User from 'App/Models/User'
 import { DateTime } from 'luxon'
 import md5 from 'md5'
 import Env from '@ioc:Adonis/Core/Env'
+import Route from '@ioc:Adonis/Core/Route'
+import Application from '@ioc:Adonis/Core/Application'
 
 export default class UsersController {
   public async index ({ response }: HttpContextContract) {
@@ -21,7 +23,7 @@ export default class UsersController {
   public async register({ request, response}: HttpContextContract) {
     try{
       await Database.transaction(async (trx) =>{
-        const data = request.only(['email', 'password', 'phone', 'city_id', 'access_level', 'avatar'])
+        const data = request.only(['name', 'email', 'password', 'phone', 'city_id', 'access_level', 'avatar'])
         const user = new User()
         let email = ''
 
@@ -42,11 +44,22 @@ export default class UsersController {
         user.useTransaction(trx)
         await user.save()
 
-        Mail.send((message) => {
+        const signedUrl = Route.makeSignedUrl("verifyEmail", {
+          params: {
+            id: user.id,
+          },
+          expiresIn: "30m",
+        })
+
+        await Mail.send((message) => {
           message
             .from(`${Env.get("SMTP_USERNAME")}`)
             .to(user.email)
             .subject('Bem-vindo ao AutoPista')
+            .html(`
+              <h1> Seja bem-vindo, ${ user.name }. </h1> <br>
+              <a href="www.google.com"><strong>Clique aqui para confirmar o seu e-mail.</strong></a><br>
+              <img src="cid:autopista" alt="AutoPista">`)
         })
 
         response
@@ -73,7 +86,7 @@ export default class UsersController {
 
   public async update ({ request, response, params }: HttpContextContract) {
     try{
-      const data = request.only(['title', 'description', 'link', 'avatar'])
+      const data = request.only(['name', 'title', 'description', 'link', 'avatar'])
       const user = await User.findOrFail(params.id)
 
       const avatar = request.file('avatar', {

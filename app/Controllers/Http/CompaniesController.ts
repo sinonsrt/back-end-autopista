@@ -60,7 +60,7 @@ export default class CompaniesController {
           return dataImage.errors
         }
 
-        await dataImage?.move(('assest/images/company'), {
+        await dataImage?.move(('assets/images/company'), {
           name: `${md5([`${DateTime.now()}`, `${dataImage.clientName}`])}`+`.${dataImage.extname}`
         })
 
