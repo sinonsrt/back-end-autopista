@@ -62,9 +62,7 @@ export default class AccessLevelsController {
 
   public async destroy ({ response, params }: HttpContextContract) {
     try{
-      const data = {
-        deleted_at: DateTime.now()
-      }
+      const data = {deleted_at: DateTime.now()}
       const accessLevel = await AccessLevel.findOrFail(params.id)
 
       accessLevel.merge(data)

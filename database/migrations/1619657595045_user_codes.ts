@@ -6,6 +6,7 @@ export default class UserCodes extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
+      table.string('content', 120).notNullable()
       table.uuid('code_id').references('id').inTable('codes')
       table.uuid('user_id').references('id').inTable('users')
       table.timestamp('deleted_at').defaultTo(null)

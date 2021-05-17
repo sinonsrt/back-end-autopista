@@ -44,13 +44,6 @@ export default class UsersController {
         user.useTransaction(trx)
         await user.save()
 
-        const signedUrl = Route.makeSignedUrl("verifyEmail", {
-          params: {
-            id: user.id,
-          },
-          expiresIn: "30m",
-        })
-
         await Mail.send((message) => {
           message
             .from(`${Env.get("SMTP_USERNAME")}`)
@@ -58,13 +51,12 @@ export default class UsersController {
             .subject('Bem-vindo ao AutoPista')
             .html(`
               <h1> Seja bem-vindo, ${ user.name }. </h1> <br>
-              <a href="www.google.com"><strong>Clique aqui para confirmar o seu e-mail.</strong></a><br>
-              <img src="cid:autopista" alt="AutoPista">`)
+              <a href="www.google.com"><strong>Clique aqui para confirmar o seu e-mail.</strong></a>`)
         })
 
         response
           .status(200)
-          .send('Usuário cadastrado com sucesso!')
+          .send(`Foi enviado um email de confirmação para ${user.email}!`)
         })
     }catch(error){
       response

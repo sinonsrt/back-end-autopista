@@ -19,6 +19,7 @@ export default class Companies extends BaseSchema {
       table.time('end_time')
       table.integer('worked_days', 120)
       table.string('image')
+      table.string('location')
       table.uuid('user_id').notNullable().references('id').inTable('users')
       table.uuid('service_id').notNullable().references('id').inTable('services')
       table.uuid('service_gas_id').notNullable().references('id').inTable('gas_services')

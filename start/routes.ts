@@ -37,4 +37,5 @@ Route.group(() => {
   Route.resource('/types', 'TypesController')
   Route.resource('/news', 'NewsController')
   Route.post('/logout', 'UsersController.logout')
+  Route.post('/codeComent', 'ComentsController.codeComent')
 }).middleware(['auth'])

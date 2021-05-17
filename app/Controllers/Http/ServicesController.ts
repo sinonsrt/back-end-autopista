@@ -60,9 +60,7 @@ export default class ServicesController {
 
   public async destroy ({ response, params }: HttpContextContract) {
     try{
-      const data = {
-        deleted_at: DateTime.now()
-      }
+      const data = { deleted_at: DateTime.now() }
       const service = await Service.findOrFail(params.id)
 
       service.merge(data)

@@ -59,7 +59,7 @@ export default class Company extends BaseModel {
   public city_id: number
 
   @column()
-  public deleted_at: string
+  public deleted_at: DateTime
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

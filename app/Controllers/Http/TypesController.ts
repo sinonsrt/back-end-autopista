@@ -60,9 +60,7 @@ export default class TypesController {
 
   public async destroy ({ response, params }: HttpContextContract) {
     try{
-      const data = {
-        deleted_at: DateTime.now()
-      }
+      const data = { deleted_at: DateTime.now() }
       const type = await Type.findOrFail(params.id)
 
       type.merge(data)

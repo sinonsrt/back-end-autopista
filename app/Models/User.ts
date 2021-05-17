@@ -18,6 +18,9 @@ export default class User extends BaseModel {
   public password: string
 
   @column()
+  public confirmed: boolean
+
+  @column()
   public phone: string
 
   @column()

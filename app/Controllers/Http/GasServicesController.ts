@@ -60,9 +60,7 @@ export default class GasServicesController {
 
   public async destroy ({ response, params }: HttpContextContract) {
     try{
-      const data = {
-        deleted_at: DateTime.now()
-      }
+      const data = { deleted_at: DateTime.now() }
       const gasService = await GasService.findOrFail(params.id)
 
       gasService.merge(data)

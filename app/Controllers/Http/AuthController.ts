@@ -1,25 +1,23 @@
-import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext"
-import User from "App/Models/User"
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import User from 'App/Models/User'
 
 export default class AuthController {
   public async login({ request, response, auth }: HttpContextContract) {
-    const email = request.input("email")
-    const password = request.input("password")
+    try {
+      const email = request.input('email')
+      const password = request.input('password')
 
-    const token = await auth.attempt(email, password, {
-      expiresIn: "2h",
-    })
+      const token = await auth.attempt(email, password, {
+        expiresIn: '2h',
+      })
 
-    if(token){
       const user = await User.findOrFail(auth.user?.id)
 
-      return { token, user }
-    } else {
-      response
-        .status(400)
-        .send('Usuário incorreto!')
+      if (token) {
+        return { token, user }
+      }
+    } catch (error) {
+      response.status(400).send('E-mail ou senha incorretos!')
     }
-    return token.toJSON()
   }
 }
-
