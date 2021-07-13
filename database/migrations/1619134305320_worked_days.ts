@@ -1,14 +1,12 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class Codes extends BaseSchema {
-  protected tableName = 'codes'
+export default class WorkedDays extends BaseSchema {
+  protected tableName = 'worked_days'
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.string('code').notNullable()
-      table.uuid('company_id').notNullable().references('id').inTable('companies')
-      table.uuid('user_id').notNullable().references('id').inTable('users')
+      table.string('description', 120)
       table.timestamp('deleted_at').defaultTo(null)
       table.timestamps(true)
     })

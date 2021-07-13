@@ -6,7 +6,6 @@ export default class AuthController {
     try {
       const email = request.input('email')
       const password = request.input('password')
-
       const token = await auth.attempt(email, password, {
         expiresIn: '2h',
       })

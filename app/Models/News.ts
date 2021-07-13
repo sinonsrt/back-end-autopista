@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeCreate, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import { v5 as uuidv5 } from 'uuid'
 import Env from '@ioc:Adonis/Core/Env'
+import User from './User'
 
 export default class News extends BaseModel {
   @column({ isPrimary: true })
@@ -31,9 +32,15 @@ export default class News extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
+  @hasMany(() => User, {
+    localKey: 'user_id',
+    foreignKey: 'id'
+  })
+  public user: HasMany<typeof User>
+
   @beforeCreate()
   public static assignUUID(news: News) {
-    if(!news.id){
+    if (!news.id) {
       news.id = uuidv5(DateTime.now().toString(), Env.get('UUID_NAMESPACE'))
     }
   }
