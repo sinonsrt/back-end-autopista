@@ -23,6 +23,9 @@ export default class Company extends BaseModel {
   public cep: string
 
   @column()
+  public address: string
+
+  @column()
   public district: string
 
   @column()
@@ -30,6 +33,9 @@ export default class Company extends BaseModel {
 
   @column()
   public phone: string
+
+  @column()
+  public email: string
 
   @column()
   public stars: string
@@ -48,9 +54,6 @@ export default class Company extends BaseModel {
 
   @column()
   public service_id: string
-
-  @column()
-  public service_gas_id: string
 
   @column()
   public type_id: string

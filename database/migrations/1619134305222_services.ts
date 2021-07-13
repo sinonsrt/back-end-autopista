@@ -6,7 +6,8 @@ export default class Services extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.string('description', 120).notNullable()
+      table.string('description').notNullable()
+      table.uuid('type_id').references('id').inTable('types')
       table.timestamp('deleted_at').defaultTo(null)
       table.timestamps(true)
     })

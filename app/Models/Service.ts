@@ -1,14 +1,18 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeCreate, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import Env from '@ioc:Adonis/Core/Env'
 import { v5 as uuidv5 } from 'uuid'
+import Type from './Type'
 
 export default class Service extends BaseModel {
   @column({ isPrimary: true })
-  public id: string
+  public id: number
 
   @column()
   public description: string
+
+  @column()
+  public type_id: string
 
   @column()
   public deleted_at: DateTime
@@ -19,8 +23,16 @@ export default class Service extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
+  @hasMany(() => Type, {
+    localKey: 'type_id',
+    foreignKey: 'id'
+  })
+  public type: HasMany<typeof Type>
+
   @beforeCreate()
-  public static assignUuid(service: Service){
-    service.id = uuidv5(DateTime.now().toString(), Env.get('UUID_NAMESPACE'))
+  public static assignUUID(service: Service) {
+    if (!service.id) {
+      service.id = uuidv5(DateTime.now().toString(), Env.get('UUID_NAMESPACE'))
+    }
   }
 }

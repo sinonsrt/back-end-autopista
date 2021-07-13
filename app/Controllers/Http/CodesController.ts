@@ -5,8 +5,7 @@ import { DateTime } from 'luxon'
 export default class CodesController {
   public async index ({ response }: HttpContextContract) {
     try{
-      const codes = await Code.query().whereNull('deleted_at')
-
+      const codes = await Code.query().whereNull('deleted_at').preload('company')
       return codes
     }catch(error){
       response

@@ -5,7 +5,7 @@ import { DateTime } from 'luxon'
 export default class AccessLevelsController {
   public async index ({ response }: HttpContextContract) {
     try{
-      const accessLevels = await AccessLevel.query()
+      const accessLevels = await AccessLevel.query().whereNull('deleted_at')
       return accessLevels
     } catch(error){
       response

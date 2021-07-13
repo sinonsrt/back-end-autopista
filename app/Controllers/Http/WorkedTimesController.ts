@@ -1,33 +1,32 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Service from 'App/Models/Service'
+import WorkedTime from 'App/Models/WorkedTime'
 import { DateTime } from 'luxon'
 
-export default class ServicesController {
+export default class WorkedTimesController {
   public async index({ response }: HttpContextContract) {
     try {
-      const service = await Service.query().whereNull('deleted_at').preload('type')
-      return service
+      const worked_times = await WorkedTime.query().whereNull('deleted_at')
+      return worked_times
     } catch (error) {
-      response.status(error.status).send('Erro ao listar serviços: ' + error)
+      response.status(error.status).send('ERROR: ' + error)
     }
   }
-
   public async store({ request, response }: HttpContextContract) {
     try {
-      const data = request.only(['description', 'type_id'])
-      await Service.create(data)
+      const data = request.only(['description'])
+      await WorkedTime.create(data)
 
-      response.status(200).send('Serviço cadastrado com sucesso!')
+      response.status(200).send('Cadastado com sucesso!')
     } catch (error) {
-      response.status(400).send('Erro ao cadastrar serviço: ' + error)
+      response.status(error.status).send('ERROR: ' + error)
     }
   }
 
   public async show({ response, params }: HttpContextContract) {
     try {
-      const service = await Service.findOrFail(params.id)
+      const worked_times = await WorkedTime.findOrFail(params.id)
 
-      return service
+      return worked_times
     } catch (error) {
       response.status(error.status).send('ERROR: ' + error)
     }
@@ -36,12 +35,12 @@ export default class ServicesController {
   public async update({ request, response, params }: HttpContextContract) {
     try {
       const data = request.only(['description'])
-      const service = await Service.findOrFail(params.id)
+      const worked_times = await WorkedTime.findOrFail(params.id)
 
-      service.merge(data)
-      service.save()
+      worked_times.merge(data)
+      worked_times.save()
 
-      response.status(200).send('Serviço atualizado com sucesso!')
+      response.status(200).send('Atualizado com sucesso!')
     } catch (error) {
       response.status(error.status).send('ERROR: ' + error)
     }
@@ -50,12 +49,12 @@ export default class ServicesController {
   public async destroy({ response, params }: HttpContextContract) {
     try {
       const data = { deleted_at: DateTime.now() }
-      const service = await Service.findOrFail(params.id)
+      const worked_times = await WorkedTime.findOrFail(params.id)
 
-      service.merge(data)
-      service.save()
+      worked_times.merge(data)
+      worked_times.save()
 
-      response.status(200).send('Serviço excluido com sucesso!')
+      response.status(200).send('Excluido com sucesso!')
     } catch (error) {
       response.status(error.status).send('Erro: ' + error)
     }

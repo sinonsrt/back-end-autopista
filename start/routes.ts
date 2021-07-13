@@ -21,21 +21,23 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/', async () => {
-  return { hello: 'world' }
+  return { hello: 'AutoPista' }
 })
 
 Route.post('/login', 'AuthController.login')
 Route.post('/register', 'UsersController.register')
+Route.post('/logout', 'UsersController.logout')
+Route.resource('/cities', 'CitiesController')
+Route.get('/dashboard', 'DashboardController.index')
+Route.resource('/accesslevel', 'AccessLevelsController')
 
 Route.group(() => {
-  Route.resource('/accesslevel', 'AccessLevelsController')
-  Route.resource('/user', 'UsersController')
-  Route.resource('/coments', 'ComentsController')
-  Route.resource('/services', 'ServicesController')
-  Route.resource('/gas', 'GasServicesController')
+  Route.resource('/codes', 'CodesController')
+  Route.resource('/workedDays', 'WorkedDaysController')
+  Route.resource('/workedTimes', 'WorkedTimesController')
   Route.resource('/companies', 'CompaniesController')
+  Route.resource('/services', 'ServicesController')
   Route.resource('/types', 'TypesController')
   Route.resource('/news', 'NewsController')
-  Route.post('/logout', 'UsersController.logout')
-  Route.post('/codeComent', 'ComentsController.codeComent')
+  Route.resource('/users', 'UsersController')
 }).middleware(['auth'])
