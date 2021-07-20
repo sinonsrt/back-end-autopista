@@ -6,6 +6,7 @@ export default class Companies extends BaseSchema {
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
+      table.string('avatar')
       table.string('company_name').notNullable()
       table.string('corporate_name').notNullable()
       table.string('cnpj')
@@ -18,7 +19,6 @@ export default class Companies extends BaseSchema {
       table.string('email')
       table.integer('stars')
       table.uuid('user_id').references('id').inTable('users')
-      table.uuid('service_id').references('id').inTable('services')
       table.uuid('type_id').references('id').inTable('types')
       table.uuid('worked_day_id').references('id').inTable('worked_days')
       table.uuid('worked_time_id').references('id').inTable('worked_times')

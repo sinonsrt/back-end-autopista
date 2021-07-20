@@ -18,7 +18,7 @@ export default class News extends BaseModel {
   public link: string
 
   @column()
-  public image: string
+  public avatar: string
 
   @column()
   public user_id: string

@@ -8,6 +8,9 @@ export default class Company extends BaseModel {
   public id: string
 
   @column()
+  public avatar: string
+
+  @column()
   public company_name: string
 
   @column()
@@ -41,19 +44,13 @@ export default class Company extends BaseModel {
   public stars: string
 
   @column()
-  public start_time: string
+  public worked_time_id: string
 
   @column()
-  public end_time: string
-
-  @column()
-  public worked_days: number
+  public worked_day_id: number
 
   @column()
   public user_id: string
-
-  @column()
-  public service_id: string
 
   @column()
   public type_id: string

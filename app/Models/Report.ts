@@ -1,18 +1,9 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
-export default class CompanyImage extends BaseModel {
+export default class Report extends BaseModel {
   @column({ isPrimary: true })
-  public id: string
-
-  @column()
-  public image_name: string
-
-  @column()
-  public company_id: string
-
-  @column()
-  public deleted_at: DateTime
+  public id: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
