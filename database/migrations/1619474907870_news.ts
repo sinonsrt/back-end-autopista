@@ -9,7 +9,7 @@ export default class News extends BaseSchema {
       table.string('title').notNullable()
       table.string('description').notNullable()
       table.string('link').notNullable()
-      table.string('image').notNullable()
+      table.string('avatar').notNullable()
       table.uuid('user_id').notNullable().references('id').inTable('users')
       table.timestamp('deleted_at').defaultTo(null)
       table.timestamps(true)

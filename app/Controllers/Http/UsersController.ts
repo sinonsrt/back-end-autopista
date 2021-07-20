@@ -51,7 +51,7 @@ export default class UsersController {
 
   public async store({ request, response }: HttpContextContract) {
     try {
-      const data = request.only(['name', 'email', 'password', 'phone', 'city_id', 'access_level'])
+      const data = request.only(['name', 'email', 'password', 'phone', 'city_id', 'access_level', 'avatar'])
 
       const avatar = request.file('avatar', {
         size: '2mb',
@@ -65,7 +65,6 @@ export default class UsersController {
       await avatar?.move(Application.publicPath('avatar'), {
         name: `${md5([`${DateTime.now()}`, `${avatar.clientName}`])}` + `.${avatar.extname}`,
       })
-
       await User.create({ ...data, avatar: avatar?.fileName, access_level: 2 })
 
       response.status(200).send(`Usuário cadastrado com sucesso!`)

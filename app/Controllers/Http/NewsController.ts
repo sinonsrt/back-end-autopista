@@ -10,17 +10,16 @@ export default class NewsController {
       const news = await News.query().whereNull('deleted_at').preload('user')
       return news
     } catch (error) {
-      console.log(error)
       response.status(400).send('Erro: ' + error)
     }
   }
 
   public async store({ request, response, auth }: HttpContextContract) {
     try {
-      const data = request.only(['title', 'description', 'link'])
+      const data = request.only(['title', 'description', 'link', 'avatar'])
       const userId = auth.user?.id
 
-      const image = request.file('image', {
+      const image = request.file('avatar', {
         size: '2mb',
         extnames: ['jpg', 'png', 'jpeg'],
       })
@@ -33,11 +32,10 @@ export default class NewsController {
         name: `${md5([`${DateTime.now()}`, `${image.clientName}`])}` + `.${image.extname}`,
       })
 
-      await News.create({ ...data, user_id: userId, image: image?.fileName })
+      await News.create({ ...data, user_id: userId, avatar: image?.fileName })
 
       response.status(200).send('Noticía cadastrada com sucesso!')
     } catch (error) {
-      console.log(error)
       response.status(400).send('Erro: ' + error)
     }
   }
@@ -53,7 +51,7 @@ export default class NewsController {
 
   public async update({ request, response, params }: HttpContextContract) {
     try {
-      const data = request.only(['title', 'description', 'link', 'image'])
+      const data = request.only(['title', 'description', 'link', 'avatar'])
       const showNew = await News.findOrFail(params.id)
 
       const image = request.file('image', {
@@ -69,7 +67,7 @@ export default class NewsController {
         name: `${md5([`${DateTime.now()}`, `${image.clientName}`])}` + `.${image.extname}`,
       })
 
-      showNew.merge({ ...data, image: image?.fileName })
+      showNew.merge({ ...data, avatar: image?.fileName })
       showNew.save()
 
       response.status(200).send('Noticía atualizada com sucesso!')
