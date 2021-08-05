@@ -41,7 +41,7 @@ export default class Company extends BaseModel {
   public email: string
 
   @column()
-  public stars: string
+  public stars: number
 
   @column()
   public worked_time_id: string
@@ -57,6 +57,9 @@ export default class Company extends BaseModel {
 
   @column()
   public city_id: number
+
+  @column()
+  public confirmed: boolean
 
   @column()
   public deleted_at: DateTime

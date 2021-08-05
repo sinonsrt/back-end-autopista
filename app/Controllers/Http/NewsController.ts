@@ -5,10 +5,12 @@ import { DateTime } from 'luxon'
 import md5 from 'md5'
 
 export default class NewsController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ request, response }: HttpContextContract) {
+    const { search } = request.all()
     try {
-      const news = await News.query().whereNull('deleted_at').preload('user')
-      return news
+      const news = News.query().whereNull('deleted_at').preload('user')
+      if(search) news.where('title', 'ILIKE', '%' + search + '%')
+      return await news
     } catch (error) {
       response.status(400).send('Erro: ' + error)
     }

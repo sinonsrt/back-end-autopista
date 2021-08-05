@@ -27,11 +27,14 @@ Route.get('/', async () => {
 Route.post('/login', 'AuthController.login')
 Route.post('/register', 'UsersController.register')
 Route.post('/logout', 'UsersController.logout')
+Route.post('/resetPassword', 'UsersController.resetPassword')
 Route.resource('/cities', 'CitiesController')
 Route.get('/dashboard', 'DashboardController.index')
 Route.resource('/accesslevel', 'AccessLevelsController')
 
 Route.group(() => {
+  Route.get('/userCodesAll', 'UserCodesController.indexAll')
+  Route.resource('/userCodes', 'UserCodesController')
   Route.resource('/codes', 'CodesController')
   Route.resource('/workedDays', 'WorkedDaysController')
   Route.resource('/workedTimes', 'WorkedTimesController')
@@ -40,4 +43,8 @@ Route.group(() => {
   Route.resource('/services', 'ServicesController')
   Route.resource('/types', 'TypesController')
   Route.resource('/users', 'UsersController')
+  Route.get('/companyConfirm/:id', 'CompaniesController.companyConfirm')
+  Route.get('/companyReports', 'ReportsController.index')
+  Route.get('/userReports', 'ReportsController.show')
+  Route.get('/ratingReports', 'ReportsController.ratingReports')
 }).middleware(['auth'])

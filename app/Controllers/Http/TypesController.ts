@@ -3,10 +3,12 @@ import Type from 'App/Models/Type'
 import { DateTime } from 'luxon'
 
 export default class TypesController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ request, response }: HttpContextContract) {
+    const { search } = request.all()
     try {
-      const types = await Type.query().whereNull('deleted_at')
-      return types
+      const types = Type.query().whereNull('deleted_at')
+      if(search) types.where('description', 'ILIKE', '%' + search + '%')
+      return await types
     } catch (error) {
       response.status(error.status).send('ERROR: ' + error)
     }

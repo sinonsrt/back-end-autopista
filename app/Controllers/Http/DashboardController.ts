@@ -7,8 +7,9 @@ export default class TypesController {
   public async index({ response }: HttpContextContract) {
     try {
       const company = await Company.query().count('*').whereNull('deleted_at')
-      const service = await Database.rawQuery("select count(*) from companies inner join types on companies.type_id = types.id where types.description = 'Prestador de Serviço'")
+      const service = await Database.rawQuery("select count(*) from companies left join types on companies.type_id = types.id WHERE companies.deleted_at IS NULL AND types.description = 'Prestador de serviço'")
       const user = await User.query().count('*').whereNull('deleted_at')
+      
       return {
         company: company[0].count,
         service: service.rows[0].count,

@@ -10,7 +10,7 @@ export default class Code extends BaseModel {
 
   @column()
   public code: string
-
+  
   @column()
   public company_id: string
 

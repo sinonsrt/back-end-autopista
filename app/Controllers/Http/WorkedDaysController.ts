@@ -3,10 +3,12 @@ import WorkedDay from 'App/Models/WorkedDay'
 import { DateTime } from 'luxon'
 
 export default class WorkedDaysController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ request, response }: HttpContextContract) {
+    const { search } = request.all()
     try {
-      const worked_days = await WorkedDay.query().whereNull('deleted_at')
-      return worked_days
+      const worked_days = WorkedDay.query().whereNull('deleted_at')
+      if(search) worked_days.where('description', 'ILIKE', '%' + search + '%')
+      return await worked_days
     } catch (error) {
       response.status(error.status).send('ERROR: ' + error)
     }

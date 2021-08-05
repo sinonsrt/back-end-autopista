@@ -3,10 +3,12 @@ import WorkedTime from 'App/Models/WorkedTime'
 import { DateTime } from 'luxon'
 
 export default class WorkedTimesController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ request,  response }: HttpContextContract) {
+    const { search } = request.all()
     try {
-      const worked_times = await WorkedTime.query().whereNull('deleted_at')
-      return worked_times
+      const worked_times = WorkedTime.query().whereNull('deleted_at')
+      if(search) worked_times.where('description', 'ILIKE', '%' + search + '%')
+      return await worked_times
     } catch (error) {
       response.status(error.status).send('ERROR: ' + error)
     }

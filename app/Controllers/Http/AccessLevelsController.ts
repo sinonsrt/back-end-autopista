@@ -3,10 +3,12 @@ import AccessLevel from 'App/Models/AccessLevel'
 import { DateTime } from 'luxon'
 
 export default class AccessLevelsController {
-  public async index ({ response }: HttpContextContract) {
+  public async index ({ request, response }: HttpContextContract) {
+    const { search } = request.all()
     try{
-      const accessLevels = await AccessLevel.query().whereNull('deleted_at')
-      return accessLevels
+      const accessLevels = AccessLevel.query().whereNull('deleted_at')
+      if(search) accessLevels.where('description', 'ILIKE', "%" + search + "%")
+      return await accessLevels
     } catch(error){
       response
         .status(error.status)

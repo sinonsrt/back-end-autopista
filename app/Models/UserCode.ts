@@ -8,7 +8,16 @@ export default class UserCode extends BaseModel {
   public id: string
 
   @column()
+  public comment: string
+
+  @column()
   public code_id: string
+
+  @column()
+  public company_id: string
+
+  @column()
+  public star: string
 
   @column()
   public user_id: string

@@ -3,10 +3,12 @@ import Code from 'App/Models/Code'
 import { DateTime } from 'luxon'
 
 export default class CodesController {
-  public async index ({ response }: HttpContextContract) {
+  public async index ({ request, response }: HttpContextContract) {
+    const { search } = request.all()
     try{
-      const codes = await Code.query().whereNull('deleted_at').preload('company')
-      return codes
+      const codes = Code.query().whereNull('deleted_at').preload('company')
+      if(search) codes.where('code', 'ILIKE', '%' + search + '%')
+      return await codes
     }catch(error){
       response
         .status(400)

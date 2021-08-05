@@ -3,10 +3,12 @@ import Service from 'App/Models/Service'
 import { DateTime } from 'luxon'
 
 export default class ServicesController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ request, response }: HttpContextContract) {
+    const { search } = request.all()
     try {
-      const service = await Service.query().whereNull('deleted_at').preload('type')
-      return service
+      const service = Service.query().whereNull('deleted_at').preload('type')
+      if(search) service.where('description', 'ILIKE', '%' + search + '%')
+      return await service
     } catch (error) {
       response.status(error.status).send('Erro ao listar serviços: ' + error)
     }

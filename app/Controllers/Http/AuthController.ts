@@ -11,6 +11,7 @@ export default class AuthController {
       })
 
       const user = await User.findOrFail(auth.user?.id)
+      await user.load('city')
 
       if (token) {
         return { token, user }
