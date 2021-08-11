@@ -12,7 +12,7 @@ import User from 'App/Models/User'
 
 export default class CompaniesController {
   public async index({ request, response }: HttpContextContract) {
-    const { order, type, company_type, confirmed, search } = request.all()
+    const { order, type, company_type, confirmed, search, page, limit, star } = request.all()
     try {
       let dtOrder = `companies.${order}`
       if (order === 'description') dtOrder = `types.${order}`
@@ -20,7 +20,7 @@ export default class CompaniesController {
         .select(
           'companies.*',
           'types.id as type_id',
-          'types.description',
+          'types.description as type',
           'cities.uf_id',
           'cities.description',
           'states.initials'
@@ -31,7 +31,16 @@ export default class CompaniesController {
         .join('states', 'cities.uf_id', 'states.id')
       if (company_type) companies.where('types.description', company_type)
       if (confirmed) companies.where('confirmed', confirmed)
-      if (search) companies.where('corporate_name', 'ILIKE', '%' + search + '%')
+      if (search)
+        companies.andWhere((query) =>
+          query
+            .orWhere('companies.company_name', 'ILIKE', '%' + search + '%')
+            .orWhere('companies.cnpj', 'ILIKE', '%' + search + '%')
+            .orWhere('cities.description', 'ILIKE', '%' + search + '%')
+            .orWhere('companies.phone', 'ILIKE', '%' + search + '%')
+        )
+      if(page) companies.paginate(page, limit)
+      if(star) companies.where('stars', '>=', star)
       return await companies.orderByRaw(`${dtOrder} ${type}`)
     } catch (error) {
       response.status(400).send('Erro: ' + error)
@@ -41,7 +50,7 @@ export default class CompaniesController {
   public async companyConfirm({ response, params }: HttpContextContract) {
     try {
       const company = await (await Company.findOrFail(params.id)).merge({ confirmed: true }).save()
-
+      const user = await (await User.findByOrFail('company_id', params.id)).merge({ confirmed: true }).save()
       await Mail.send((message) => {
         message
           .from(`${Env.get('SMTP_USERNAME')}`)
@@ -49,6 +58,7 @@ export default class CompaniesController {
           .subject('Bem-vindo ao AutoPista').html(`
             <h1> Seja bem-vindo, ${company.company_name}. </h1> <br>
             <h2> O seu cadastro foi confirmado com sucesso! </h2>
+            <h3> O seu usuário é ${user.email}! </h3>
           `)
       })
 
@@ -65,21 +75,20 @@ export default class CompaniesController {
       'corporate_name',
       'cnpj',
       'ie',
-      'password',
       'cep',
       'address',
       'phone',
       'district',
       'number',
       'phone',
+      'type_id',
       'email',
       'stars',
-      'user_id',
-      'type_id',
       'worked_day_id',
       'worked_time_id',
       'city_id',
     ])
+    const password = request.input('password')
 
     const dataService = request.input('services')
 
@@ -97,20 +106,21 @@ export default class CompaniesController {
         name: `${md5([`${DateTime.now()}`, `${avatar.clientName}`])}` + `.${avatar.extname}`,
       })
 
-      const company = new Company()
-      company.fill({ ...dataCompany, avatar: avatar?.fileName, confirmed: false })
-      company.useTransaction(trx)
-      await company.save()
-
-      await (await User.create({
+      const company = await Company.create({
+        ...dataCompany, avatar: avatar?.fileName, confirmed: false 
+      })
+      
+      await User.create({
         name: company.company_name,
+        company_id: company.id,
         email: company.email,
-        password: dataCompany.password,
+        password: password,
         phone: dataCompany.phone,
         avatar: avatar?.fileName,
         city_id: dataCompany.city_id,
-        access_level: 2
-      })).useTransaction(trx)
+        access_level: 2,
+        confirmed: false,
+      })
 
       let services = dataService.split(',').map((data) => ({
         id: uuidv5(DateTime.now().toString() + Math.random(), Env.get('UUID_NAMESPACE')),
@@ -124,6 +134,7 @@ export default class CompaniesController {
 
       response.status(200).send('Empresa cadastrada com sucesso!')
     }).catch((error) => {
+      console.log(error)
       response.status(400).send('Erro: ' + error)
     })
   }
@@ -166,7 +177,7 @@ export default class CompaniesController {
       })
 
       const company = new Company()
-      company.fill({ ...dataCompany, avatar: avatar?.fileName, confirmed: true  })
+      company.fill({ ...dataCompany, avatar: avatar?.fileName, confirmed: true })
       company.useTransaction(trx)
       await company.save()
 

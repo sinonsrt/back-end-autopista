@@ -10,8 +10,8 @@ export default class UsersController {
   public async index({ request, response }: HttpContextContract) {
     const { search } = request.all()
     try {
-      const users = User.query().whereNull('deleted_at')
-      if (search) users.where('name', 'ILIKE', '%' + search + '%')
+      const users = User.query().whereNull('deleted_at').preload('city', query => query.preload('state'))
+      if (search) users.andWhere(query => query.orWhere('name', 'ILIKE', '%' + search + '%').orWhere('email', 'ILIKE', '%' + search + '%'))
       return await users
     } catch (error) {
       response.status(400).send('Erro: ' + error)
@@ -20,7 +20,7 @@ export default class UsersController {
 
   public async register({ request, response }: HttpContextContract) {
     try {
-      const data = request.only(['name', 'email', 'password', 'phone', 'city_id', 'access_level'])
+      const data = request.only(['name', 'email', 'password', 'phone', 'city_id'])
       let email = ''
       const avatar = request.file('avatar', {
         size: '2mb',
@@ -35,7 +35,7 @@ export default class UsersController {
         name: `${md5([`${DateTime.now()}`, `${avatar.clientName}`])}` + `.${avatar.extname}`,
       })
 
-      await User.create({ ...data, avatar: avatar?.fileName, access_level: 2 })
+      await User.create({ ...data, avatar: avatar?.fileName, access_level: 3, confirmed: true })
 
       await Mail.send((message) => {
         message
@@ -146,7 +146,6 @@ export default class UsersController {
     try {
       const id = params.id
       const { current_password, new_password } = request.only([
-        'id',
         'current_password',
         'new_password',
       ])
