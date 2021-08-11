@@ -4,6 +4,7 @@ import Hash from '@ioc:Adonis/Core/Hash'
 import Env from '@ioc:Adonis/Core/Env'
 import { v5 as uuidv5 } from 'uuid'
 import City from './City'
+import Company from './Company'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -11,6 +12,9 @@ export default class User extends BaseModel {
 
   @column()
   public name: string
+
+  @column()
+  public company_id: string
 
   @column()
   public email: string
@@ -39,9 +43,6 @@ export default class User extends BaseModel {
   @column()
   public deletedAt: DateTime
 
-  @column()
-  public company_id: string
-
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
@@ -53,6 +54,12 @@ export default class User extends BaseModel {
     foreignKey: "id"
   })
   public city: HasMany<typeof City>
+
+  @hasMany(() => Company, {
+    localKey: "company_id",
+    foreignKey: "id"
+  })
+  public company: HasMany<typeof Company>
 
   @beforeSave()
   public static async hashPassword (user: User) {

@@ -15,8 +15,13 @@ export default class UserCodesController {
         .join('users', 'user_codes.user_id', 'users.id')
         .join('codes', 'user_codes.code_id', 'codes.id')
         .join('companies', 'user_codes.company_id', 'companies.id')
-
-      if (search) userCodes.where('code', 'ILIKE', '%' + search + '%')
+      if (search)
+        userCodes.andWhere((query) =>
+          query
+            .orWhere('codes.code', 'ILIKE', '%' + search + '%')
+            .orWhere('users.name', 'ILIKE', '%' + search + '%')
+            .orWhere('companies.company_name', 'ILIKE', '%' + search + '%')
+        )
       return await userCodes.orderBy(order, type)
     } catch (error) {
       response.status(400).send('Erro: ' + error)
@@ -26,7 +31,8 @@ export default class UserCodesController {
   public async indexAll({ request, response, auth }: HttpContextContract) {
     const { order, type } = request.all()
     try {
-      const userCodes = Database.from('user_codes').select('user_codes.*', 'codes.code', 'companies.company_name', 'users.name')
+      const userCodes = Database.from('user_codes')
+        .select('user_codes.*', 'codes.code', 'companies.company_name', 'users.name')
         .whereNull('user_codes.deleted_at')
         .join('users', 'user_codes.user_id', 'users.id')
         .join('codes', 'user_codes.code_id', 'codes.id')
@@ -41,6 +47,10 @@ export default class UserCodesController {
   public async store({ request, response, auth }: HttpContextContract) {
     await Database.transaction(async (trx) => {
       const data = request.only(['comment', 'star', 'code'])
+
+      if (auth.user?.access_level !== 3)
+        throw new Error('Apenas usuários podem realizar a avaliação!')
+
       const code = await Code.findByOrFail('code', data.code)
       if (code.code) {
         await (

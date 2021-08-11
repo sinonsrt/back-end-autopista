@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeCreate, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import Env from '@ioc:Adonis/Core/Env'
 import { v5 as uuidv5 } from 'uuid'
+import City from './City'
 
 export default class Company extends BaseModel {
   @column({ isPrimary: true })
@@ -69,6 +70,12 @@ export default class Company extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @hasMany(() => City, {
+    localKey: "city_id",
+    foreignKey: "id"
+  })
+  public city: HasMany<typeof City>
 
   @beforeCreate()
   public static assignUuid(company: Company){

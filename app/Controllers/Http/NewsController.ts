@@ -9,7 +9,7 @@ export default class NewsController {
     const { search } = request.all()
     try {
       const news = News.query().whereNull('deleted_at').preload('user')
-      if(search) news.where('title', 'ILIKE', '%' + search + '%')
+      if(search) news.andWhere('title', 'ILIKE', '%' + search + '%')
       return await news
     } catch (error) {
       response.status(400).send('Erro: ' + error)
